@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/XPMultiplierHelpers.cs
+/XP Multiplier.sln
+/XP Multiplier.csproj
