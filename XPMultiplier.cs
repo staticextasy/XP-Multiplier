@@ -9,15 +9,16 @@ using HarmonyLib;
 
 namespace XP_Multiplier
 {
-    [BepInPlugin("com.staticextasy.xpmultiplier", "XP Multiplier", "0.0.1")]
+    [BepInPlugin("com.staticextasy.xpmultiplier", "XP Multiplier", "1.0.2")]
     public class XPMultiplier : BaseUnityPlugin
     {
         private Harmony _harmony;
         public static ConfigEntry<float> XPMultiplierV;
+        public static ConfigEntry<bool> EnableMultiplier; // New toggle config
 
         private void Awake()
         {
-            // Bind config
+            // Bind config for multiplier value
             XPMultiplierV = Config.Bind(
                 "General",
                 "XPMultiplier",
@@ -28,10 +29,18 @@ namespace XP_Multiplier
                 )
             );
 
+            // Bind config for enabling/disabling the multiplier
+            EnableMultiplier = Config.Bind(
+                "General",
+                "EnableMultiplier",
+                true, // Default is enabled
+                "Toggle to enable or disable the XP multiplier."
+            );
+
             _harmony = new Harmony("com.staticextasy.xpmultiplier");
             _harmony.PatchAll();
 
-            Logger.LogInfo($"XP Multiplier plugin loaded. Current multiplier: {XPMultiplierV.Value}");
+            Logger.LogInfo($"XP Multiplier plugin loaded. Current multiplier: {XPMultiplierV.Value}, Enabled: {EnableMultiplier.Value}");
         }
 
         private void OnDestroy()
@@ -46,7 +55,11 @@ namespace XP_Multiplier
     {
         static void Prefix(ref int _incomingXP)
         {
-            _incomingXP = (int)(_incomingXP * XPMultiplier.XPMultiplierV.Value);
+            // Check if the multiplier is enabled before applying it
+            if (XPMultiplier.EnableMultiplier.Value)
+            {
+                _incomingXP = (int)(_incomingXP * XPMultiplier.XPMultiplierV.Value);
+            }
         }
     }
 }
